@@ -2,11 +2,18 @@
 
 public class PlayerAnimator : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
+    public static PlayerAnimator instance;
+
+    public Animator animator;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Update()
     {
-        if (PlayerController.instance.isAlive)
+        if (PlayerController.instance.isAlive && !PlayerController.instance.hasGameFinished)
         {
             if (Input.GetMouseButtonDown(0))
             {

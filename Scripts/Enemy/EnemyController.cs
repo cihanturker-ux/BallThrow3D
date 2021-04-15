@@ -11,8 +11,7 @@ public class EnemyController : MonoBehaviour
     public static EnemyController instance;
     public Animator animator;
     public NavMeshAgent agent;
-    public Transform target;
-    //public float lookRadius = 5f;
+    private Transform target;
 
     void Awake()
     {
@@ -22,6 +21,7 @@ public class EnemyController : MonoBehaviour
         ragdollBodies = GetComponentsInChildren<Rigidbody>();
         ragdollColliders = GetComponentsInChildren<Collider>();
         agent = GetComponent<NavMeshAgent>();
+        target = FindObjectOfType<PlayerController>().gameObject.transform;
     }
 
     void Start()
@@ -32,13 +32,31 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        //float distance = Vector3.Distance(target.position, transform.position);
         GetControl();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        GameObject otherObject = other.gameObject;
+
+        if (otherObject.CompareTag("ExplosionArea"))
+        {
+            GetComponent<EnemyController>().agent.enabled = false;
+            GetComponent<EnemyController>().animator.SetBool("Walk", false);
+            GetComponent<EnemyController>().GetHit();
+            GetComponentInChildren<DeathMaterial>().enabled = true;
+            
+            Enemies.enemiesList.Remove(GetComponent<EnemyController>());
+            if (Enemies.enemiesList.Count == 0)
+            {
+                TapToStart.instance.LevelFinished();
+            }
+        }
     }
 
     void GetControl()
     {
-        if (enemyStateChecker.state != EnemyState.State.DEAD)
+        if (enemyStateChecker.state != EnemyState.State.DEAD && PlayerController.instance.hasGameStarted)
         {
             if (enemyStateChecker.state == EnemyState.State.IDLE)
             {
@@ -75,9 +93,7 @@ public class EnemyController : MonoBehaviour
     public void GetHit()
     {
         enemyStateChecker.Dead(true);
-        Enemies.enemiesList.Remove(transform); // Listenin aktif olarak güncellenmesi, yeri değiştirilebilir.
         ToggleRagdoll(true);
-        Vector3 explosionPos = new Vector3(-1,0.5f,-1);
     }
     
     private void ToggleRagdoll(bool state)

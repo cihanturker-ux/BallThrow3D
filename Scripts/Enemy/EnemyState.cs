@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyState : MonoBehaviour
 {
@@ -46,23 +44,19 @@ public class EnemyState : MonoBehaviour
             if (!PlayerController.instance.isAlive)
             {
                 enemyState = State.IDLE;
-                print("state = Walk");
             }
             else if (distanceTotarget >= 1.8f)
             {
                 enemyState = State.WALK;
-                print("state = Walk");
             }
             else if (distanceTotarget < 1.8f)
             {
                 enemyState = State.ATTACK;
-                print("state = Attack");
             }
         }
         else if (enemyState == State.DEAD)
         {
             Destroy(this.gameObject, 2f);
-            print("state = Dead");
         }
 
     }

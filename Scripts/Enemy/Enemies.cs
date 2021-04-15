@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Enemies : MonoBehaviour
 {
-    public static List<Transform> enemiesList;
+    public static List<EnemyController> enemiesList = new List<EnemyController>();
 
     void Start()
     {
-        enemiesList = new List<Transform>();
-
-        foreach (Transform child in transform)
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+        
+        foreach (EnemyController enemy in enemies)
         {
-            enemiesList.Add(child);
+            enemiesList.Add(enemy);
         }
     }
 }
