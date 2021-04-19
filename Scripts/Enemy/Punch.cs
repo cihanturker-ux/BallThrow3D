@@ -9,9 +9,9 @@ public class Punch : MonoBehaviour
             PlayerController.instance.isAlive = false;
             TapToStart.instance.LevelFailed();
 
-            foreach (EnemyController enemy in Enemies.enemiesList)
+            foreach (Transform enemy in Enemies.instance.enemies[0])
             {
-                enemy.agent.ResetPath();
+                enemy.GetComponent<EnemyController>().agent.ResetPath();
             }
         }
     }

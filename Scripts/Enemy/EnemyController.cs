@@ -4,22 +4,23 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    private Rigidbody[] ragdollBodies;
-    private Collider[] ragdollColliders;
-    private EnemyState enemyStateChecker;
-
     public static EnemyController instance;
+
     public Animator animator;
     public NavMeshAgent agent;
-    private Transform target;
 
+    [HideInInspector] public bool isDead = false;
+
+    private Rigidbody[] ragdollBodies;
+    private EnemyState enemyStateChecker;
+    private Transform target;
+    
     void Awake()
     {
         enemyStateChecker = GetComponent<EnemyState>();
         instance = this;
         animator = GetComponentInChildren<Animator>();
         ragdollBodies = GetComponentsInChildren<Rigidbody>();
-        ragdollColliders = GetComponentsInChildren<Collider>();
         agent = GetComponent<NavMeshAgent>();
         target = FindObjectOfType<PlayerController>().gameObject.transform;
     }
@@ -41,16 +42,23 @@ public class EnemyController : MonoBehaviour
 
         if (otherObject.CompareTag("ExplosionArea"))
         {
+            if (Ball.feedbackBool)
+            {
+                int randomIndex = Random.Range(0, TapToStart.instance.feedbacks.Count);
+                GameObject text = Instantiate(TapToStart.instance.feedbacks[randomIndex], TapToStart.instance.canvas.transform);
+                Destroy(text, 1.5f);
+            }
+            Ball.feedbackBool = !Ball.feedbackBool;
+
+            SpecialPower.instance.UpdateFever(); // Update fever UI element
+
             GetComponent<EnemyController>().agent.enabled = false;
             GetComponent<EnemyController>().animator.SetBool("Walk", false);
             GetComponent<EnemyController>().GetHit();
             GetComponentInChildren<DeathMaterial>().enabled = true;
-            
-            Enemies.enemiesList.Remove(GetComponent<EnemyController>());
-            if (Enemies.enemiesList.Count == 0)
-            {
-                TapToStart.instance.LevelFinished();
-            }
+
+            Enemies.instance.enemies[0].Remove(transform);
+            Enemies.instance.JumpOverTheRoof();
         }
     }
 
@@ -104,16 +112,5 @@ public class EnemyController : MonoBehaviour
         {
             rb.isKinematic = !state;
         }
-        
-        foreach (Collider collider in ragdollColliders)
-        {
-            //collider.enabled = state;
-        }
     }
-    
-    //void OnDrawGizmosSelected()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, lookRadius);
-    //}
 }

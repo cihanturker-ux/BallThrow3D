@@ -7,11 +7,17 @@ public class TapToStart : MonoBehaviour
 {
     public static TapToStart instance;
 
-    [SerializeField] private GameObject tapToStart, tapToStart2, tapToStart3, gameOver, finish, crosshair;
+    public List<GameObject> feedbacks;
+    public GameObject canvas;
 
+    [SerializeField] private GameObject tapToStart, tapToStart2, tapToStart3, gameOver, finish, crosshair;
+    
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
     }
 
     void Update()
@@ -36,7 +42,6 @@ public class TapToStart : MonoBehaviour
     public void LevelFailed()
     {
         crosshair.GetComponent<Image>().enabled = false;
-        Enemies.enemiesList = new List<EnemyController>(); // reset the list
         gameOver.gameObject.SetActive(true);
     }
 
